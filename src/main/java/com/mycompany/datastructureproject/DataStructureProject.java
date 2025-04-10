@@ -312,7 +312,7 @@ class CustomSystem {
             } else {
                 studentHead = new Student(id, studentHead);
             }
-            System.out.println("added student");
+            System.out.println("the student added successfully");
         }
     }
 
