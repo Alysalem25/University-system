@@ -151,10 +151,19 @@ public class DataStructureProject {
             CustomSystem system = new CustomSystem();
             switch (choice) {
                 case 1:
-                    System.out.println("Enter student ID: ");
+                    System.out.print("Enter student ID (not 0 and not already added): ");
                     int studentId = scanner.nextInt();
                     system.addStudent(studentId);
-                    break;
+                    if (studentId == 0) {
+                        System.out.println(" ID cannot be 0. Please try again.");
+                    } else if (system.verifyStudent(studentId)) {
+                        System.out.println(" This ID is already added. Try a different one.");
+                    } else {
+                        break; 
+                    }
+                system.addStudent(studentId);
+                System.out.println(" Student added successfully!");
+                break;
                 case 2:
                     System.out.println("Enter course ID: ");
                     int courseId = scanner.nextInt();
