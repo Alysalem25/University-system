@@ -2,8 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
  */
-
-package com.mycompany.datastructureproject;
+package datastructureproject;
 
 import java.util.Scanner;
 
@@ -188,7 +187,7 @@ public class DataStructureProject {
                     int unenrollStudentId = scanner.nextInt();
                     System.out.println("Enter course ID to unenroll from: ");
                     int unenrollCourseId = scanner.nextInt();
-                    // removeEnrollment(unenrollStudentId, unenrollCourseId);
+                    system.removeEnrollment(unenrollStudentId, unenrollCourseId);
                     break;
                 case 9:
                     System.out.println("Enter student ID to list courses: ");
@@ -198,7 +197,7 @@ public class DataStructureProject {
                 case 10:
                     System.out.println("Enter course ID to list students: ");
                     int listStudentsCourseId = scanner.nextInt();
-                    // listStudentsByCourse(listStudentsCourseId);
+                    system.listStudentsByCourse(listStudentsCourseId);
                     break;
                 case 11:
                     // sortStudentsByID(courseId);
@@ -207,10 +206,14 @@ public class DataStructureProject {
                     // sortCoursesByID(studentId);
                     break;
                 case 13:
-                    // isfullCourse(courseId);
+                    System.out.println("Enter course ID to check if it is full: ");
+                    int courseID = scanner.nextInt();
+                    system.isfullCourse(courseID);
                     break;
-                case 14:
-                    // isnormalstudent(studentId);
+                    case 14:
+                    System.out.println("Enter student ID to check if normal: ");
+                    int studentID = scanner.nextInt();
+                    system.isnormalstudent(studentID);
                     break;
                 case 15:
                     System.out.println("Enter course ID to verify: ");
@@ -286,7 +289,6 @@ class Student {
         else
             studentCourses.add(courseId);
     }
-
 }
 
 // #################################################################################################
@@ -312,7 +314,8 @@ class Courses {
 
     public void addStudent(int studentId) {
         if (courseStudents == null)
-            courseStudents = new studentAndCourses(studentId, 0); // Replace 0 with the appropriate courseId if available
+            courseStudents = new studentAndCourses(studentId, 0); // Replace 0 with the appropriate courseId if
+                                                                  // available
         else
             courseStudents.add(studentId);
     }
@@ -332,7 +335,7 @@ class studentAndCourses {
     int id;
     studentAndCourses next;
 
-    studentAndCourses(int studentId , int courseId) {
+    studentAndCourses(int studentId, int courseId) {
         // this.id = id;
         // nextStudent.studentId = id;
         // nextCourse.courseId = id;
@@ -434,7 +437,7 @@ class CustomSystem {
         }
     }
 
-    // Display all students
+    // Display all courses
     public void displayAllCourses() {
         Courses tmp;
         tmp = coursesHead;
@@ -476,7 +479,7 @@ class CustomSystem {
         }
         if (studentHead.studentId == id) {// if fint the course the frist course time complecsity O(1)
             coursesHead = coursesHead.nextCourse;
-            System.out.println("removed course with id: " + id); 
+            System.out.println("removed course with id: " + id);
             return;
         }
         Courses tmp = coursesHead;
@@ -507,14 +510,15 @@ class CustomSystem {
     public boolean verifyCourse(int id) {
         Courses tmp = coursesHead;
         while (tmp != null) {
-            if (tmp.courseId == id ) {
+            if (tmp.courseId == id) {
                 return true;
             }
             tmp = tmp.nextCourse;
         }
         return false;
     }
-//list student courses 
+
+    // list student courses
     public void listCoursesByStudent(int studentID) {
         if (!verifyStudent(studentID)) {
             System.out.println("Student with ID " + studentID + " does not exist.");
@@ -526,10 +530,28 @@ class CustomSystem {
             s = s.nextStudent;
 
         if (s != null && s.studentCourses != null) {
-            System.out.println("Courses for student " + studentID + ": ");
+            System.out.println("Courses for student " + studentID + " : ");
             s.studentCourses.count();
         } else {
             System.out.println("No courses found for student " + studentID);
+        }
+    }
+
+    // list course students
+    public void listStudentsByCourse(int courseID) {
+        if (!verifyCourse(courseID)) {
+            System.out.println("Course with ID " + courseID + " doesn't exist.");
+            return;
+        }
+        Courses c = coursesHead;
+        while (c != null && c.courseId != courseID) {
+            c = c.nextCourse;
+        }
+        if (c != null && c.courseStudents != null) {
+            System.out.println("Students for course " + courseID + " : ");
+            c.courseStudents.count();
+        } else {
+            System.out.println("No Students found for course " + courseID);
         }
     }
 
@@ -579,5 +601,105 @@ class CustomSystem {
             System.out.println("Student " + studentID + " enrolled in course " + courseID);
         }
     }
+
+    // remove enrollment fun
+    public void removeEnrollment(int studentID, int courseID) {
+        if (!verifyStudent(studentID)) {
+            System.out.println("Student with ID " + studentID + " doesn't exist.");
+            return;
+        }
+
+        if (!verifyCourse(courseID)) {
+            System.out.println("Course with ID " + courseID + " doesn't exist.");
+            return;
+        }
+
+        Student s = studentHead;
+        while (s != null && s.studentId != studentID)
+            s = s.nextStudent;
+
+        Courses c = coursesHead;
+        while (c != null && c.courseId != courseID)
+            c = c.nextCourse;
+
+        if (s != null && s.studentCourses != null) {
+            s.studentCourses = removeFromList(s.studentCourses, courseID);
+        }
+
+        if (c != null && c.courseStudents != null) {
+            c.courseStudents = removeFromList(c.courseStudents, studentID);
+        }
+
+        System.out.println("Enrollment of student " + studentID + " removed from course " + courseID + ".");
+    }
+
+    // remove node function
+    private studentAndCourses removeFromList(studentAndCourses head, int id) {
+        if (head == null)
+            return null;
+
+        if (head.id == id) {
+            return head.next;
+        }
+
+        studentAndCourses current = head;
+        while (current.next != null) {
+            if (current.next.id == id) {
+                current.next = current.next.next;
+                return head;
+            }
+            current = current.next;
+        }
+
+        return head;
+    }
+
+    // to check if the course complete or not
+    public boolean isfullCourse(int courseID) {
+        Courses tmp = coursesHead;
+    
+        while (tmp != null) {
+            if (tmp.courseId == courseID) {
+                int studentCount = tmp.courseStudents != null ? tmp.courseStudents.count() : 0;
+    
+                if (studentCount >= 20 && studentCount <= 30) {
+                    System.out.println("Course " + courseID + " has a valid number of students: " + studentCount);
+                    return false;
+                } else if (studentCount < 20) {
+                    System.out.println("Course " + courseID + " has less than 20 students enrolled.");
+                    return false;
+                } else {
+                    System.out.println("Course " + courseID + " is overfilled. More than 30 students enrolled.");
+                    return true;
+                }
+            }
+            tmp = tmp.nextCourse;
+        }
+    
+        System.out.println("Course with ID " + courseID + " not found.");
+        return false;
+    }
+    
+
+    public boolean isnormalstudent(int studentID) {
+        Student tmp = studentHead;
+        while (tmp != null) {
+            if (tmp.studentId == studentID) {
+                int courseCount = tmp.studentCourses != null ? tmp.studentCourses.count() : 0;
+                if (courseCount >= 2 && courseCount <= 7) {
+                    System.out.println("Student " + studentID + " enrolled in " + courseCount + " course(s): Normal student");
+                    return true;
+                } else {
+                    System.out.println("Student " + studentID + " enrolled in " + courseCount + " course(s): Not a normal student");
+                    return false;
+                }
+            }
+            tmp = tmp.nextStudent;
+        }
+    
+        System.out.println("Student with ID " + studentID + " not found.");
+        return false;
+    }
+    
 
 }
