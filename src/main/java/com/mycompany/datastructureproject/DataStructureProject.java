@@ -5,6 +5,7 @@
 package com.mycompany.datastructureproject;
 
 import java.util.Scanner;
+import java.util.Stack;
 
 /**
  *
@@ -69,7 +70,8 @@ public class DataStructureProject {
           // => we need method to check if there are student with the same id or !=0
           // # add while loop when it invalid ✓
           // ------------------------
-          // 3- addCourse(int courseID) => Adds a new course to the system (linked list). ✓
+          // 3- addCourse(int courseID) => Adds a new course to the system (linked list).
+          // ✓
           // we need method to check if there are course with the same id or !=0
           // add while loop when it invalid ✓
           // ------------------------
@@ -94,16 +96,18 @@ public class DataStructureProject {
           // enrollment from a course.
           // check if course exists and student exists frist!
           // ------------------------
-          // 10- listCoursesByStudent(int studentID) => Displays all courses a student is ✓
+          // 10- listCoursesByStudent(int studentID) => Displays all courses a student is
+          // ✓
           // enrolled in. from the studentCourses in Student class
           // ------------------------
-          // 11- listStudentsByCourse(int courseID) => Displays all students enrolled in a ✓
+          // 11- listStudentsByCourse(int courseID) => Displays all students enrolled in a
+          // ✓
           // course. from the courseStudents in Courses class
           // ------------------------
           // 12- sortStudentsByID(int courseID) => Sorts the list of students in ascending
           // order by ID.
           // ------------------------
-          // 13- sortCoursesByID(int studentID) => Sorts the list of courses in ascending 
+          // 13- sortCoursesByID(int studentID) => Sorts the list of courses in ascending
           // order by ID.
           // ------------------------
           // 14- isfullCourse(int courseID) => Checks if a course if complete or not. ✓
@@ -145,7 +149,8 @@ public class DataStructureProject {
             System.out.println("16- verify student");
             System.out.println("17- display all students");
             System.out.println("18- display all courses");
-            System.out.println("19- exit");
+            System.out.println("19- undo");
+            System.out.println("20- exit");
             System.out.println("Please enter your choice: ");
             int choice = scanner.nextInt();
 
@@ -235,6 +240,9 @@ public class DataStructureProject {
                     system.displayAllCourses();
                     break;
                 case 19:
+                    system.undo();
+                    break;
+                case 20:
                     System.out.println("Exiting the program.");
                     flag = false;
                     break;
@@ -394,6 +402,7 @@ class CustomSystem {
     int lastCourseId;
 
     Scanner scanner = new Scanner(System.in);
+    Stack<Object> stack = new Stack<>();
 
     // add new student
     public void addStudent(int id) {
@@ -412,6 +421,8 @@ class CustomSystem {
             studentHead = new Student(id, studentHead);
         }
         lastStudentId = id; // Update the last student ID
+        stack.push(id + ":addStudent"); // Push the last student ID and action onto the stack
+
         System.out.println("Student with ID " + id + " added successfully.");
     }
 
@@ -432,6 +443,7 @@ class CustomSystem {
             coursesHead = new Courses(id, coursesHead);
         }
         lastCourseId = id; // Update the last course ID
+        stack.push(id + ":addCourse"); // Push the last course ID and action onto the stack
         System.out.println("Course with ID :" + id + "  added successfully");
 
     }
@@ -467,6 +479,7 @@ class CustomSystem {
         if (studentHead.studentId == id) {// if fint the student the frist student time complecsity O(1)
             studentHead = studentHead.nextStudent;
             System.out.println("removed student with id: " + id);
+            stack.push(id + ":removeStudent"); // Push the last student ID and action onto the stack
             return;
         }
         Student tmp = studentHead;
@@ -474,6 +487,7 @@ class CustomSystem {
             if (tmp.nextStudent.studentId == id) {
                 tmp.nextStudent = tmp.nextStudent.nextStudent;
                 System.out.println("removed student with id: " + id);
+                stack.push(id + ":removeStudent"); // Push the last student ID and action onto the stack
                 return;
             }
             tmp = tmp.nextStudent;
@@ -490,6 +504,7 @@ class CustomSystem {
         if (studentHead.studentId == id) {// if fint the course the frist course time complecsity O(1)
             coursesHead = coursesHead.nextCourse;
             System.out.println("removed course with id: " + id);
+            stack.push(id + ":removeCourse"); // Push the last course ID and action onto the stack
             return;
         }
         Courses tmp = coursesHead;
@@ -497,6 +512,7 @@ class CustomSystem {
             if (tmp.nextCourse.courseId == id) {
                 tmp.nextCourse = tmp.nextCourse.nextCourse;
                 System.out.println("removed course with id: " + id);
+                stack.push(id + ":removeCourse"); // Push the last course ID and action onto the stack
                 return;
             }
             tmp = tmp.nextCourse;
@@ -608,6 +624,7 @@ class CustomSystem {
             // If all good, enroll
             s.addCourse(courseID);
             c.addStudent(studentID);
+            stack.push(studentID + ":enrollStudent:" + courseID); // Push the last student ID and action onto the stack
             System.out.println("Student " + studentID + " enrolled in course " + courseID);
         }
     }
@@ -639,7 +656,7 @@ class CustomSystem {
         if (c != null && c.courseStudents != null) {
             c.courseStudents = removeFromList(c.courseStudents, studentID);
         }
-
+        stack.push(studentID + ":removeEnrollment:" + courseID); // Push the last student ID and action onto the stack
         System.out.println("Enrollment of student " + studentID + " removed from course " + courseID + ".");
     }
 
@@ -750,4 +767,46 @@ class CustomSystem {
 
     }
 
+    public void undo() {
+        // Implement undo functionality here
+        String entry = (String) stack.pop(); // or stack.peek() if you don't want to remove it
+        String[] parts = entry.split(":");
+
+        // parts[0] is the id as String
+        // parts[1] is the action
+
+        int id = Integer.parseInt(parts[0]); // Convert ID back to int
+        String action = parts[1];
+
+        System.out.println("Student ID: " + id);
+        System.out.println("Action: " + action);
+
+        if(action.equals("addStudent")) {
+            // Remove the student
+            removeStudent(id);
+        } else if (action.equals("addCourse")) {
+            // Remove the course
+            removeCourse(id);
+        } else if (action.equals("enrollStudent")) {
+            // Unenroll the student from the course
+            removeEnrollment(id, Integer.parseInt(parts[2]));
+        } else if (action.equals("removeEnrollment")) {
+            // Re-enroll the student in the course
+            enrollStudent(id, Integer.parseInt(parts[2]));
+        } else if (action.equals("removeStudent")) {
+            // Add the student back
+            addStudent(id);
+        } else if (action.equals("removeCourse")) {
+            // Add the course back
+            addCourse(id);
+        }else {
+            System.out.println("Unknown action: " + action);
+        }
+       
+    }
+
+    public void redo() {
+        // Implement redo functionality here
+        System.out.println("Redo operation not implemented yet.");
+    }
 }
