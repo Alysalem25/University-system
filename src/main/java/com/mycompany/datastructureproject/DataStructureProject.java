@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
  */
-package datastructureproject;
+package com.mycompany.datastructureproject;
 
 import java.util.Scanner;
 
@@ -64,53 +64,53 @@ public class DataStructureProject {
           // --- Courses CoursesHead
           // --methods
           // ###################################
-          // 2- addStudent(int studentID) => Adds a new student to the system (linked
+          // 2- addStudent(int studentID) => Adds a new student to the system (linked ✓
           // list).
           // => we need method to check if there are student with the same id or !=0
           // # add while loop when it invalid ✓
           // ------------------------
-          // 3- addCourse(int courseID) => Adds a new course to the system (linked list).
+          // 3- addCourse(int courseID) => Adds a new course to the system (linked list). ✓
           // we need method to check if there are course with the same id or !=0
           // add while loop when it invalid ✓
           // ------------------------
-          // 4- removeStudent(int studentID) =>Removes a student from the system.
+          // 4- removeStudent(int studentID) =>Removes a student from the system. ✓
           // check if student exists or not frist! ✓
           // ------------------------
-          // 5- removeCourse(int courseID) => Removes a course from the system.
+          // 5- removeCourse(int courseID) => Removes a course from the system. ✓
           // check if course exists or not frist! ✓
           // ------------------------
-          // 6- getLastStudentAdded() => Returns the ID of the last student added.
+          // 6- getLastStudentAdded() => Returns the ID of the last student added. ✓
           // Donot get the tail of the list he can sort before call the method
           // ------------------------
-          // 7- getLastCourseAdded() => Returns the ID of the last course added.
+          // 7- getLastCourseAdded() => Returns the ID of the last course added. ✓
           // Donot get the tail of the list he can sort before call the method
           // ------------------------
-          // 8- enrollStudent(int studentID, int courseID) => Enrolls a student in a
+          // 8- enrollStudent(int studentID, int courseID) => Enrolls a student in a ✓
           // course
           // (updates both lists).
           // check if course exists and student exists frist! ✓
           // ------------------------
-          // 9- removeEnrollment(int studentID, int courseID) => Removes a student’s
+          // 9- removeEnrollment(int studentID, int courseID) => Removes a student’s ✓
           // enrollment from a course.
           // check if course exists and student exists frist!
           // ------------------------
-          // 10- listCoursesByStudent(int studentID) => Displays all courses a student is
+          // 10- listCoursesByStudent(int studentID) => Displays all courses a student is ✓
           // enrolled in. from the studentCourses in Student class
           // ------------------------
-          // 11- listStudentsByCourse(int courseID) => Displays all students enrolled in a
+          // 11- listStudentsByCourse(int courseID) => Displays all students enrolled in a ✓
           // course. from the courseStudents in Courses class
           // ------------------------
           // 12- sortStudentsByID(int courseID) => Sorts the list of students in ascending
           // order by ID.
           // ------------------------
-          // 13- sortCoursesByID(int studentID) => Sorts the list of courses in ascending
+          // 13- sortCoursesByID(int studentID) => Sorts the list of courses in ascending 
           // order by ID.
           // ------------------------
-          // 14- isfullCourse(int courseID) => Checks if a course if complete or not.
+          // 14- isfullCourse(int courseID) => Checks if a course if complete or not. ✓
           // ------------------------
-          // 15- isnormalstudent(int courseID) => Checks if a student registers 2-7
+          // 15- isnormalstudent(int courseID) => Checks if a student registers 2-7 ✓
           // courses or
-          // not from the studentCourses in Student class
+          // not from the studentCourses in Student class ✓
           // ------------------------
           // 16 & 17 ### redo & undo ###
           // ------------------------
@@ -125,6 +125,7 @@ public class DataStructureProject {
         CustomSystem system = new CustomSystem();
         boolean flag = true;
         while (flag) {
+            System.out.println("=======================================================================");
             System.out.println("Welcome to university system");
             System.out.println("1- add student");
             System.out.println("2- add course");
@@ -152,12 +153,12 @@ public class DataStructureProject {
                 case 1:
                     System.out.println("Enter student ID: ");
                     int studentId = scanner.nextInt();
-                    system.addStudent(studentId, scanner);
+                    system.addStudent(studentId);
                     break;
                 case 2:
                     System.out.println("Enter course ID: ");
                     int courseId = scanner.nextInt();
-                    system.addCourse(courseId, scanner);
+                    system.addCourse(courseId);
                     break;
                 case 3:
                     System.out.println("Enter student ID to remove: ");
@@ -170,10 +171,10 @@ public class DataStructureProject {
                     system.removeCourse(removeCourseId);
                     break;
                 case 5:
-                    // getLastStudentAdded();
+                    system.getLastStudentAdded();
                     break;
                 case 6:
-                    // getLastCourseAdded();
+                    system.getLastCourseAdded();
                     break;
                 case 7:
                     System.out.println("Enter student ID to enroll: ");
@@ -210,7 +211,7 @@ public class DataStructureProject {
                     int courseID = scanner.nextInt();
                     system.isfullCourse(courseID);
                     break;
-                    case 14:
+                case 14:
                     System.out.println("Enter student ID to check if normal: ");
                     int studentID = scanner.nextInt();
                     system.isnormalstudent(studentID);
@@ -314,8 +315,9 @@ class Courses {
 
     public void addStudent(int studentId) {
         if (courseStudents == null)
-            courseStudents = new studentAndCourses(studentId, 0); // Replace 0 with the appropriate courseId if
-                                                                  // available
+            courseStudents = new studentAndCourses(studentId, this.courseId); // Replace 0 with the appropriate courseId
+                                                                              // if
+        // available
         else
             courseStudents.add(studentId);
     }
@@ -388,8 +390,13 @@ class CustomSystem {
     Student studentHead;
     Courses coursesHead;
 
+    int lastStudentId;
+    int lastCourseId;
+
+    Scanner scanner = new Scanner(System.in);
+
     // add new student
-    public void addStudent(int id, Scanner scanner) {
+    public void addStudent(int id) {
         while (verifyStudent(id) || id <= 0) {
             if (id <= 0) {
                 System.out.println("Student ID cannot be 0 or less than 0. Please enter a valid ID:");
@@ -404,11 +411,12 @@ class CustomSystem {
         } else {
             studentHead = new Student(id, studentHead);
         }
+        lastStudentId = id; // Update the last student ID
         System.out.println("Student with ID " + id + " added successfully.");
     }
 
     // add new course
-    public void addCourse(int id, Scanner scanner) {
+    public void addCourse(int id) {
         while (verifyCourse(id) || id <= 0) {
             if (id <= 0) {
                 System.out.println("Course ID cannot be 0. Please enter a valid ID:");
@@ -423,7 +431,9 @@ class CustomSystem {
         } else {
             coursesHead = new Courses(id, coursesHead);
         }
-        System.out.println("Course added successfully");
+        lastCourseId = id; // Update the last course ID
+        System.out.println("Course with ID :" + id + "  added successfully");
+
     }
 
     // Display all students
@@ -657,11 +667,11 @@ class CustomSystem {
     // to check if the course complete or not
     public boolean isfullCourse(int courseID) {
         Courses tmp = coursesHead;
-    
+
         while (tmp != null) {
             if (tmp.courseId == courseID) {
                 int studentCount = tmp.courseStudents != null ? tmp.courseStudents.count() : 0;
-    
+
                 if (studentCount >= 20 && studentCount <= 30) {
                     System.out.println("Course " + courseID + " has a valid number of students: " + studentCount);
                     return false;
@@ -675,11 +685,10 @@ class CustomSystem {
             }
             tmp = tmp.nextCourse;
         }
-    
+
         System.out.println("Course with ID " + courseID + " not found.");
         return false;
     }
-    
 
     public boolean isnormalstudent(int studentID) {
         Student tmp = studentHead;
@@ -687,19 +696,58 @@ class CustomSystem {
             if (tmp.studentId == studentID) {
                 int courseCount = tmp.studentCourses != null ? tmp.studentCourses.count() : 0;
                 if (courseCount >= 2 && courseCount <= 7) {
-                    System.out.println("Student " + studentID + " enrolled in " + courseCount + " course(s): Normal student");
+                    System.out.println(
+                            "Student " + studentID + " enrolled in " + courseCount + " course(s): Normal student");
                     return true;
                 } else {
-                    System.out.println("Student " + studentID + " enrolled in " + courseCount + " course(s): Not a normal student");
+                    System.out.println("Student " + studentID + " enrolled in " + courseCount
+                            + " course(s): Not a normal student");
                     return false;
                 }
             }
             tmp = tmp.nextStudent;
         }
-    
+
         System.out.println("Student with ID " + studentID + " not found.");
         return false;
     }
-    
+
+    // GetLastStudent
+    public void getLastStudentAdded() {
+        // if (studentHead == null) {
+        // System.out.println("No added students yet.");
+        // return -1;
+        // }
+        // return studentHead.studentId;
+
+        while (studentHead != null) {
+            if (studentHead.studentId == lastStudentId) {
+                System.out.println("Last student added: " + studentHead.studentId);
+                return;
+            }
+            studentHead = studentHead.nextStudent;
+        }
+        System.out.println("Student wasn't add yet.");
+    }
+
+    // GetLastCourse
+    public void getLastCourseAdded() {
+        // if (coursesHead == null) {
+        // System.out.println("No added courses yet.");
+        // return -1;
+        // }
+        // return coursesHead.courseId;
+
+        while (coursesHead != null) {
+            if (coursesHead.courseId == lastCourseId) {
+                System.out.println("Last course added: " + coursesHead.courseId);
+                return;
+
+            }
+            coursesHead = coursesHead.nextCourse;
+        }
+        System.out.println("Course wasn't add yet.");
+
+    }
 
 }
