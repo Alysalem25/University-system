@@ -402,7 +402,8 @@ class CustomSystem {
     int lastCourseId;
 
     Scanner scanner = new Scanner(System.in);
-    Stack<Object> stack = new Stack<>();
+    Stack<String> undoStack = new Stack<>();
+    Stack<String> redoStack = new Stack<>();
 
     // add new student
     public void addStudent(int id) {
@@ -421,7 +422,7 @@ class CustomSystem {
             studentHead = new Student(id, studentHead);
         }
         lastStudentId = id; // Update the last student ID
-        stack.push(id + ":addStudent"); // Push the last student ID and action onto the stack
+        undoStack.push(id + ":addStudent"); // Push the last student ID and action onto the stack
 
         System.out.println("Student with ID " + id + " added successfully.");
     }
@@ -443,7 +444,7 @@ class CustomSystem {
             coursesHead = new Courses(id, coursesHead);
         }
         lastCourseId = id; // Update the last course ID
-        stack.push(id + ":addCourse"); // Push the last course ID and action onto the stack
+        undoStack.push(id + ":addCourse"); // Push the last course ID and action onto the stack
         System.out.println("Course with ID :" + id + "  added successfully");
 
     }
@@ -479,7 +480,7 @@ class CustomSystem {
         if (studentHead.studentId == id) {// if fint the student the frist student time complecsity O(1)
             studentHead = studentHead.nextStudent;
             System.out.println("removed student with id: " + id);
-            stack.push(id + ":removeStudent"); // Push the last student ID and action onto the stack
+            undoStack.push(id + ":removeStudent"); // Push the last student ID and action onto the stack
             return;
         }
         Student tmp = studentHead;
@@ -487,7 +488,7 @@ class CustomSystem {
             if (tmp.nextStudent.studentId == id) {
                 tmp.nextStudent = tmp.nextStudent.nextStudent;
                 System.out.println("removed student with id: " + id);
-                stack.push(id + ":removeStudent"); // Push the last student ID and action onto the stack
+                undoStack.push(id + ":removeStudent"); // Push the last student ID and action onto the stack
                 return;
             }
             tmp = tmp.nextStudent;
@@ -504,7 +505,7 @@ class CustomSystem {
         if (studentHead.studentId == id) {// if fint the course the frist course time complecsity O(1)
             coursesHead = coursesHead.nextCourse;
             System.out.println("removed course with id: " + id);
-            stack.push(id + ":removeCourse"); // Push the last course ID and action onto the stack
+            undoStack.push(id + ":removeCourse"); // Push the last course ID and action onto the stack
             return;
         }
         Courses tmp = coursesHead;
@@ -512,7 +513,7 @@ class CustomSystem {
             if (tmp.nextCourse.courseId == id) {
                 tmp.nextCourse = tmp.nextCourse.nextCourse;
                 System.out.println("removed course with id: " + id);
-                stack.push(id + ":removeCourse"); // Push the last course ID and action onto the stack
+                undoStack.push(id + ":removeCourse"); // Push the last course ID and action onto the stack
                 return;
             }
             tmp = tmp.nextCourse;
@@ -624,7 +625,8 @@ class CustomSystem {
             // If all good, enroll
             s.addCourse(courseID);
             c.addStudent(studentID);
-            stack.push(studentID + ":enrollStudent:" + courseID); // Push the last student ID and action onto the stack
+            undoStack.push(studentID + ":enrollStudent:" + courseID); // Push the last student ID and action onto the
+                                                                      // stack
             System.out.println("Student " + studentID + " enrolled in course " + courseID);
         }
     }
@@ -656,7 +658,8 @@ class CustomSystem {
         if (c != null && c.courseStudents != null) {
             c.courseStudents = removeFromList(c.courseStudents, studentID);
         }
-        stack.push(studentID + ":removeEnrollment:" + courseID); // Push the last student ID and action onto the stack
+        undoStack.push(studentID + ":removeEnrollment:" + courseID); // Push the last student ID and action onto the
+                                                                     // stack
         System.out.println("Enrollment of student " + studentID + " removed from course " + courseID + ".");
     }
 
@@ -767,46 +770,81 @@ class CustomSystem {
 
     }
 
+    // undo 
     public void undo() {
-        // Implement undo functionality here
-        String entry = (String) stack.pop(); // or stack.peek() if you don't want to remove it
-        String[] parts = entry.split(":");
+        String undoAction = (String) undoStack.pop(); 
+        String[] parts = undoAction.split(":");
 
-        // parts[0] is the id as String
-        // parts[1] is the action
 
-        int id = Integer.parseInt(parts[0]); // Convert ID back to int
+        int id = Integer.parseInt(parts[0]); // Convert id to int
         String action = parts[1];
 
         System.out.println("Student ID: " + id);
         System.out.println("Action: " + action);
 
-        if(action.equals("addStudent")) {
+        if (action.equals("addStudent")) {
             // Remove the student
             removeStudent(id);
+            String idToString = String.valueOf(id);
+            redoStack.push(idToString + ":addStudent");
         } else if (action.equals("addCourse")) {
             // Remove the course
             removeCourse(id);
+            String idToString = String.valueOf(id);
+            redoStack.push(idToString + ":addCourse");
         } else if (action.equals("enrollStudent")) {
             // Unenroll the student from the course
             removeEnrollment(id, Integer.parseInt(parts[2]));
+            String idToString = String.valueOf(id);
+            redoStack.push(idToString + ":enrollStudent:" + parts[2]);
         } else if (action.equals("removeEnrollment")) {
             // Re-enroll the student in the course
             enrollStudent(id, Integer.parseInt(parts[2]));
+            String idToString = String.valueOf(id);
+            redoStack.push(idToString + ":removeEnrollment:" + parts[2]);
         } else if (action.equals("removeStudent")) {
             // Add the student back
             addStudent(id);
+            String idToString = String.valueOf(id);
+            redoStack.push(idToString + ":removeStudent");
         } else if (action.equals("removeCourse")) {
             // Add the course back
             addCourse(id);
-        }else {
+            String idToString = String.valueOf(id);
+            redoStack.push(idToString + ":removeCourse");
+        } else {
             System.out.println("Unknown action: " + action);
         }
-       
+
     }
 
     public void redo() {
-        // Implement redo functionality here
-        System.out.println("Redo operation not implemented yet.");
+        String redoAction = (String) redoStack.pop();
+        String[] parts = redoAction.split(":");
+
+        int id = Integer.parseInt(parts[0]); // Convert id to int
+        String action = parts[1];
+
+        if(action.equals("addStudent")) {
+            // Add the student back
+            addStudent(id);
+        } else if (action.equals("addCourse")) {
+            // Add the course back
+            addCourse(id);
+        } else if (action.equals("enrollStudent")) {
+            // Re-enroll the student in the course
+            enrollStudent(id, Integer.parseInt(parts[2]));
+        } else if (action.equals("removeEnrollment")) {
+            // Unenroll the student from the course
+            removeEnrollment(id, Integer.parseInt(parts[2]));
+        } else if (action.equals("removeStudent")) {
+            // Remove the student again
+            removeStudent(id);
+        } else if (action.equals("removeCourse")) {
+            // Remove the course again
+            removeCourse(id);
+        } else {
+            System.out.println("Unknown action: " + action);
+        }
     }
 }
