@@ -150,7 +150,8 @@ public class DataStructureProject {
             System.out.println("17- display all students");
             System.out.println("18- display all courses");
             System.out.println("19- undo");
-            System.out.println("20- exit");
+            System.out.println("20- redo");
+            System.out.println("21- Exit");
             System.out.println("Please enter your choice: ");
             int choice = scanner.nextInt();
 
@@ -247,6 +248,9 @@ public class DataStructureProject {
                     system.undo();
                     break;
                 case 20:
+                system.redo();
+                break;
+                case 21:
                     System.out.println("Exiting the program.");
                     flag = false;
                     break;
