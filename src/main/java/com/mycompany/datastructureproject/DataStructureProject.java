@@ -206,11 +206,15 @@ public class DataStructureProject {
                     system.listStudentsByCourse(listStudentsCourseId);
                     break;
                 case 11:
-                    // sortStudentsByID(courseId);
+                    System.out.println("Enter course ID to sort students by ID: ");
+                    int sortStudentsCourseId = scanner.nextInt();
+                    system.sortStudentsByID(sortStudentsCourseId);
                     break;
                 case 12:
-                    // sortCoursesByID(studentId);
-                    break;
+                System.out.println("Enter student ID to sort courses by ID: ");
+                int sortCoursesStudentId = scanner.nextInt();
+                system.sortCoursesByID(sortCoursesStudentId);
+                break;
                 case 13:
                     System.out.println("Enter course ID to check if it is full: ");
                     int courseID = scanner.nextInt();
@@ -770,11 +774,10 @@ class CustomSystem {
 
     }
 
-    // undo 
+    // undo
     public void undo() {
-        String undoAction = (String) undoStack.pop(); 
+        String undoAction = (String) undoStack.pop();
         String[] parts = undoAction.split(":");
-
 
         int id = Integer.parseInt(parts[0]); // Convert id to int
         String action = parts[1];
@@ -825,7 +828,7 @@ class CustomSystem {
         int id = Integer.parseInt(parts[0]); // Convert id to int
         String action = parts[1];
 
-        if(action.equals("addStudent")) {
+        if (action.equals("addStudent")) {
             // Add the student back
             addStudent(id);
         } else if (action.equals("addCourse")) {
@@ -846,5 +849,86 @@ class CustomSystem {
         } else {
             System.out.println("Unknown action: " + action);
         }
+    }
+
+    // sort students by ID for a specific course
+    public void sortStudentsByID(int courseID) {
+        if (!verifyCourse(courseID)) {
+            System.out.println("Course with ID " + courseID + " doesn't exist.");
+            return;
+        }
+        Courses c = coursesHead;
+        while (c != null && c.courseId != courseID) {
+            c = c.nextCourse;
+        }
+        if (c == null || c.courseStudents == null) {
+            System.out.println("No students found for course " + courseID);
+            return;
+        }
+        c.courseStudents = insertionSort(c.courseStudents);
+        System.out.println("Students sorted by ID for course " + courseID + ":");
+        if (c.courseStudents != null) {
+            c.courseStudents.count();
+        }
+    }
+
+    public void sortCoursesByID(int studentID) {
+        if (!verifyStudent(studentID)) {
+            System.out.println("Student with ID " + studentID + " doesn't exist.");
+            return;
+        }
+
+        // find the student
+        Student s = studentHead;
+        while (s != null && s.studentId != studentID) {
+            s = s.nextStudent;
+        }
+
+        // check if student exist and have courses
+        if (s == null || s.studentCourses == null) {
+            System.out.println("No courses found for student " + studentID);
+            return;
+        }
+
+        // dort the linked list of courses for this student using insertion sort
+        s.studentCourses = insertionSort(s.studentCourses);
+
+        System.out.println("Courses sorted by ID for student " + studentID + ":");
+        if (s.studentCourses != null) {
+            s.studentCourses.count();
+        }
+    }
+
+    // insertion sortimplementation for student andCourses linked list
+    public studentAndCourses insertionSort(studentAndCourses head) {
+        studentAndCourses sortedList = null;
+
+        studentAndCourses current = head;
+        while (current != null) {
+            studentAndCourses next = current.next;
+            sortedList = sortedInsert(sortedList, current);
+
+            current = next;
+        }
+
+        return sortedList;
+    }
+
+    public studentAndCourses sortedInsert(studentAndCourses sortedHead, studentAndCourses newNode) {
+        newNode.next = null;
+
+        if (sortedHead == null || sortedHead.id >= newNode.id) {
+            newNode.next = sortedHead;
+            return newNode;
+        }
+
+        studentAndCourses current = sortedHead;
+        while (current.next != null && current.next.id < newNode.id) {
+            current = current.next;
+        }
+
+        newNode.next = current.next;
+        current.next = newNode;
+        return sortedHead;
     }
 }
