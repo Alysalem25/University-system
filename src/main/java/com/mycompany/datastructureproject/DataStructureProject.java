@@ -23,7 +23,7 @@ public class DataStructureProject {
           // #1 => Aly - Galal - Tamer - Salma => 1 Main , 4 remove, 5 remove ,
           // 6 getLast ,7 getLast , 16 redo , 17 undo
           // ###################################
-          // #2 => Hazem - Basem - desoky => 8 remove Enroll ,9 Enrolls ,
+          // #2 => Hazem - Basem - desouky => 8 remove Enroll ,9 Enrolls ,
           // 10 displayAll , 11 displayAll , 12 sort , 13 sort
           // ###################################
           // #3 => Baraa - Said - Wesam => 2 add , 3 add , 14 isfullCourse ,
@@ -110,18 +110,18 @@ public class DataStructureProject {
           // 13- sortCoursesByID(int studentID) => Sorts the list of courses in ascending
           // order by ID.
           // ------------------------
-          // 14- isfullCourse(int courseID) => Checks if a course if complete or not. ✓
+          // 14- isfullCourse(int courseID) => Checks if a course if complete or not.
           // ------------------------
-          // 15- isnormalstudent(int courseID) => Checks if a student registers 2-7 ✓
+          // 15- isnormalstudent(int courseID) => Checks if a student registers 2-7
           // courses or
-          // not from the studentCourses in Student class ✓
+          // not from the studentCourses in Student class
           // ------------------------
           // 16 & 17 ### redo & undo ###
           // ------------------------
           // ====================== Addition methods ======================
-          // 18- vaildCourse(int id) => check if the course id valid or added before ✓
+          // 18- vaildCourse(int id) => check if the course id valid or added before
           // ------------------------
-          // 19- vaildStudent(int id) => check if the student id valid or added before ✓
+          // 19- vaildStudent(int id) => check if the student id valid or added before
           // ------------------------
         }
         // ###################################
@@ -131,7 +131,7 @@ public class DataStructureProject {
         while (flag) {
             System.out.println("=======================================================================");
             System.out.println("Welcome to university system");
-            System.out.println("1- add student");
+            System.out.println("1- Add Student");
             System.out.println("2- add course");
             System.out.println("3- remove student");
             System.out.println("4- remove course");
@@ -152,6 +152,7 @@ public class DataStructureProject {
             System.out.println("19- undo");
             System.out.println("20- redo");
             System.out.println("21- Exit");
+            System.out.println("----------------------------------------------------------------");
             System.out.println("Please enter your choice: ");
             int choice = scanner.nextInt();
 
@@ -212,10 +213,10 @@ public class DataStructureProject {
                     system.sortStudentsByID(sortStudentsCourseId);
                     break;
                 case 12:
-                System.out.println("Enter student ID to sort courses by ID: ");
-                int sortCoursesStudentId = scanner.nextInt();
-                system.sortCoursesByID(sortCoursesStudentId);
-                break;
+                    System.out.println("Enter student ID to sort courses by ID: ");
+                    int sortCoursesStudentId = scanner.nextInt();
+                    system.sortCoursesByID(sortCoursesStudentId);
+                    break;
                 case 13:
                     System.out.println("Enter course ID to check if it is full: ");
                     int courseID = scanner.nextInt();
@@ -248,29 +249,20 @@ public class DataStructureProject {
                     system.undo();
                     break;
                 case 20:
-                system.redo();
-                break;
+                    system.redo();
+                    break;
                 case 21:
                     System.out.println("Exiting the program.");
                     flag = false;
+                    break;
+                case 22:
+                    system.table();
                     break;
                 default:
                     System.out.println("Invalid choice. Please try again.");
                     break;
             }
 
-            // CustomSystem s1 = new CustomSystem();
-            // s1.addStudent(1);
-            // s1.addStudent(2);
-            // s1.addStudent(3);
-            // s1.removeStudent(2);
-            // s1.displayAllStudents();
-            // s1.addCourse(1);
-            // s1.addCourse(2);
-            // System.out.println("course vrify " + s1.verifyCourse(2));
-            // // s1.removeCourse(2);
-            // s1.addCourse(4);
-            // s1.displayAllCourses();
         }
     }
 
@@ -338,8 +330,8 @@ class Courses {
             courseStudents.add(studentId);
     }
 }
-// #################################################################################################
 
+// #################################################################################################
 class studentAndCourses {
     // Student currentStudent;
     Student nextStudent;
@@ -401,13 +393,48 @@ class studentAndCourses {
 }
 
 // #################################################################################################
-
 class CustomSystem {
     Student studentHead;
     Courses coursesHead;
 
     int lastStudentId;
     int lastCourseId;
+
+    public void table() {
+        System.out.println("\n========== Students and Their Courses ==========");
+        System.out.printf("%-15s | %-20s\n", "Student ID", "Course IDs");
+        System.out.println("-----------------------------------------------");
+
+        Student tmpStudent = studentHead;
+        while (tmpStudent != null) {
+            System.out.printf("%-15d | ", tmpStudent.studentId);
+            studentAndCourses sc = tmpStudent.studentCourses;
+            while (sc != null) {
+                if (sc.coursesHead != null) {
+                    System.out.print(sc.coursesHead.courseId + " ");
+                }
+                sc = sc.next;
+            }
+            System.out.println();
+            tmpStudent = tmpStudent.nextStudent;
+        }
+
+        System.out.println("\n========== Courses and Their Students ==========");
+        System.out.printf("%-15s | %-20s\n", "Course ID", "Student IDs");
+        System.out.println("-----------------------------------------------");
+
+        Courses tmpCourse = coursesHead;
+        while (tmpCourse != null) {
+            System.out.printf("%-15d | ", tmpCourse.courseId);
+            studentAndCourses cs = tmpCourse.courseStudents;
+            while (cs != null) {
+                System.out.print(cs.id + " ");
+                cs = cs.next;
+            }
+            System.out.println();
+            tmpCourse = tmpCourse.nextCourse;
+        }
+    }
 
     Scanner scanner = new Scanner(System.in);
     Stack<String> undoStack = new Stack<>();
@@ -459,23 +486,31 @@ class CustomSystem {
 
     // Display all students
     public void displayAllStudents() {
-        Student tmp;
-        tmp = studentHead;
-        while (tmp != null) {
-            System.out.println(tmp.studentId);
-            tmp = tmp.nextStudent;
-
+        if (studentHead != null) {
+            Student tmp;
+            tmp = studentHead;
+            while (tmp != null) {
+                System.out.println(tmp.studentId);
+                tmp = tmp.nextStudent;
+    
+            }
+            
+        }else{
+            System.out.println("no student");
         }
     }
 
     // Display all courses
     public void displayAllCourses() {
-        Courses tmp;
-        tmp = coursesHead;
-        while (tmp != null) {
-            System.out.println(tmp.courseId);
-            tmp = tmp.nextCourse;
-
+        if ( coursesHead != null) {
+            Courses tmp;
+            tmp = coursesHead;
+            while (tmp != null) {
+                System.out.println(tmp.courseId);
+                tmp = tmp.nextCourse;
+            }
+        }else{
+            System.out.println("No coures added");
         }
     }
 
@@ -510,7 +545,7 @@ class CustomSystem {
             System.out.println("No courses to remove.");
             return;
         }
-        if (studentHead.studentId == id) {// if fint the course the frist course time complecsity O(1)
+        if (coursesHead.courseId == id) {// if fint the course the frist course time complecsity O(1)
             coursesHead = coursesHead.nextCourse;
             System.out.println("removed course with id: " + id);
             undoStack.push(id + ":removeCourse"); // Push the last course ID and action onto the stack
@@ -521,7 +556,7 @@ class CustomSystem {
             if (tmp.nextCourse.courseId == id) {
                 tmp.nextCourse = tmp.nextCourse.nextCourse;
                 System.out.println("removed course with id: " + id);
-                undoStack.push(id + ":removeCourse"); // Push the last course ID and action onto the stack
+                undoStack.push(id + ":removeCourse "); // Push the last course ID and action onto the stack
                 return;
             }
             tmp = tmp.nextCourse;
@@ -780,78 +815,104 @@ class CustomSystem {
 
     // undo
     public void undo() {
-        String undoAction = (String) undoStack.pop();
-        String[] parts = undoAction.split(":");
 
-        int id = Integer.parseInt(parts[0]); // Convert id to int
-        String action = parts[1];
-
-        System.out.println("Student ID: " + id);
-        System.out.println("Action: " + action);
-
-        if (action.equals("addStudent")) {
-            // Remove the student
-            removeStudent(id);
-            String idToString = String.valueOf(id);
-            redoStack.push(idToString + ":addStudent");
-        } else if (action.equals("addCourse")) {
-            // Remove the course
-            removeCourse(id);
-            String idToString = String.valueOf(id);
-            redoStack.push(idToString + ":addCourse");
-        } else if (action.equals("enrollStudent")) {
-            // Unenroll the student from the course
-            removeEnrollment(id, Integer.parseInt(parts[2]));
-            String idToString = String.valueOf(id);
-            redoStack.push(idToString + ":enrollStudent:" + parts[2]);
-        } else if (action.equals("removeEnrollment")) {
-            // Re-enroll the student in the course
-            enrollStudent(id, Integer.parseInt(parts[2]));
-            String idToString = String.valueOf(id);
-            redoStack.push(idToString + ":removeEnrollment:" + parts[2]);
-        } else if (action.equals("removeStudent")) {
-            // Add the student back
-            addStudent(id);
-            String idToString = String.valueOf(id);
-            redoStack.push(idToString + ":removeStudent");
-        } else if (action.equals("removeCourse")) {
-            // Add the course back
-            addCourse(id);
-            String idToString = String.valueOf(id);
-            redoStack.push(idToString + ":removeCourse");
+        if (undoStack.empty()) {
+            System.out.println("No action had been taken to undo it.");
         } else {
-            System.out.println("Unknown action: " + action);
-        }
+            String undoAction = (String) undoStack.pop();
+            String[] parts = undoAction.split(":");
 
+            int id = Integer.parseInt(parts[0]); // Convert id to int
+            String action = parts[1];
+            if (action.equals("addStudent")) {
+                System.out.println("Student ID: " + id);
+                System.out.println("Action: " + action);
+                // Remove the student
+
+                removeStudent(id);
+                String idToString = String.valueOf(id);
+                redoStack.push(idToString + ":addStudent");
+                undoStack.pop();
+            } else if (action.equals("addCourse")) {
+                System.out.println("Course ID: " + id);
+                System.out.println("Action: " + action);
+                // Remove the course
+                removeCourse(id);
+                String idToString = String.valueOf(id);
+                redoStack.push(idToString + ":addCourse");
+                undoStack.pop();
+            } else if (action.equals("enrollStudent")) {
+                System.out.println("Student ID: " + id);
+                System.out.println("Course ID: " + Integer.parseInt(parts[2]));
+                System.out.println("Action: " + action);
+                // Unenroll the student from the course
+                removeEnrollment(id, Integer.parseInt(parts[2]));
+                String idToString = String.valueOf(id);
+                redoStack.push(idToString + ":enrollStudent:" + parts[2]);
+                undoStack.pop();
+            } else if (action.equals("removeEnrollment")) {
+                System.out.println("Student ID: " + id);
+                System.out.println("Course ID: " + Integer.parseInt(parts[2]));
+                System.out.println("Action: " + action);
+                // Re-enroll the student in the course
+                enrollStudent(id, Integer.parseInt(parts[2]));
+                String idToString = String.valueOf(id);
+                redoStack.push(idToString + ":removeEnrollment:" + parts[2]);
+                undoStack.pop();
+            } else if (action.equals("removeStudent")) {
+                System.out.println("Student ID: " + id);
+                System.out.println("Action: " + action);
+                // Add the student back
+                addStudent(id);
+                String idToString = String.valueOf(id);
+                redoStack.push(idToString + ":removeStudent");
+                undoStack.pop();
+            } else if (action.equals("removeCourse")) {
+                System.out.println("Course ID: " + id);
+                System.out.println("Action: " + action);
+                // Add the course back
+                addCourse(id);
+                String idToString = String.valueOf(id);
+                redoStack.push(idToString + ":removeCourse");
+            } else {
+                System.out.println("Unknown action: " + action);
+            }
+        }
     }
 
+    // redo method
     public void redo() {
-        String redoAction = (String) redoStack.pop();
-        String[] parts = redoAction.split(":");
+        if (redoStack.empty()) {
+            System.out.println("No undo .");
 
-        int id = Integer.parseInt(parts[0]); // Convert id to int
-        String action = parts[1];
-
-        if (action.equals("addStudent")) {
-            // Add the student back
-            addStudent(id);
-        } else if (action.equals("addCourse")) {
-            // Add the course back
-            addCourse(id);
-        } else if (action.equals("enrollStudent")) {
-            // Re-enroll the student in the course
-            enrollStudent(id, Integer.parseInt(parts[2]));
-        } else if (action.equals("removeEnrollment")) {
-            // Unenroll the student from the course
-            removeEnrollment(id, Integer.parseInt(parts[2]));
-        } else if (action.equals("removeStudent")) {
-            // Remove the student again
-            removeStudent(id);
-        } else if (action.equals("removeCourse")) {
-            // Remove the course again
-            removeCourse(id);
         } else {
-            System.out.println("Unknown action: " + action);
+            String redoAction = (String) redoStack.pop();
+            String[] parts = redoAction.split(":");
+
+            int id = Integer.parseInt(parts[0]); // Convert id to int
+            String action = parts[1];
+
+            if (action.equals("addStudent")) {
+                // Add the student back
+                addStudent(id);
+            } else if (action.equals("addCourse")) {
+                // Add the course back
+                addCourse(id);
+            } else if (action.equals("enrollStudent")) {
+                // Re-enroll the student in the course
+                enrollStudent(id, Integer.parseInt(parts[2]));
+            } else if (action.equals("removeEnrollment")) {
+                // Unenroll the student from the course
+                removeEnrollment(id, Integer.parseInt(parts[2]));
+            } else if (action.equals("removeStudent")) {
+                // Remove the student again
+                removeStudent(id);
+            } else if (action.equals("removeCourse")) {
+                // Remove the course again
+                removeCourse(id);
+            } else {
+                System.out.println("Unknown action: " + action);
+            }
         }
     }
 
@@ -903,7 +964,7 @@ class CustomSystem {
         }
     }
 
-    // insertion sortimplementation for student andCourses linked list
+    // insertion sort implementation for student andCourses linked list
     public studentAndCourses insertionSort(studentAndCourses head) {
         studentAndCourses sortedList = null;
 
@@ -935,4 +996,6 @@ class CustomSystem {
         current.next = newNode;
         return sortedHead;
     }
+
+   
 }
